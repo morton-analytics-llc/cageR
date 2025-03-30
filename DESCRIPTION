@@ -1,0 +1,14 @@
+Package: cageR
+Title: Component Augmented Generative Expressions (CAGE)
+Version: 0.0.0.9000
+Authors@R: 
+    person("Ryan", "Morton", , "morton@myma.us", role = c("aut", "cre"))
+Description: This package provides complete support for building
+    Component Augmented Generative Expressions (CAGE) models from
+    LLM foundation models. It provides support for building component
+    training data, model tuning, and a Shiny application for interacting
+    with your model.
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
