@@ -18,24 +18,16 @@ create_content <- function(func, args_to_use){
   
   ellipses_available <- length(func_args[names(func_args) == '...']) > 0
   
-  ## generate string from arguments
-  func_args_glued <- purrr::imap(args_to_use, function(d, i){
-    if(d %in% names(func_args) | ellipses_available){
-      final <- glue::glue(" {names(args_to_use[i])} = {d}")
-      return(final)
-    } else {
-      next
-    }
-  }) |>
-    paste0(collapse = ",")
-  
   ## produce data.frame row where each column is text
-  prompt_var <- glue::glue("{prompt_start} using the arguments {func_args_glued}")
+  prompt_var <- glue::glue("{prompt_start} using the arguments {args_to_use}")
   
-  func_call <- glue::glue("{func}({func_args_glued})")
+  func_call <- glue::glue("{func}({args_to_use})")
   
   func_result <- tryCatch(
-    func_result <- lazyeval::lazy_eval(func_call)
+    expr = {
+      func_result <- rlang::eval_tidy( rlang::parse_expr(func_call))
+      func_result <- glue::glue("{class(func_result)}")
+    }
     ,error = function(err){
       func_result <- 'error'
     }
