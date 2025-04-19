@@ -41,7 +41,7 @@ functions_to_use <- c(
 lengths_to_use <- c('longer', 'shorter')
 
 ## all combinations 
-combos_to_use <- crossing(personas_to_use, roles_to_use, purposes_to_use)
+combos_to_use <- crossing(personas_to_use, roles_to_use, purposes_to_use, functions_to_use)
 
 df_prompts_response <- map_df(seq_len(nrow(combos_to_use[1:5,])), function(idx){
   this_df <- combos_to_use[idx,]
