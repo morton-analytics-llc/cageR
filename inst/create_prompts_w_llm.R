@@ -1,7 +1,11 @@
 library(ellmer)
 library(ollamar)
 library(tidyr)
+library(purrr)
 library(furrr)
+library(cageR)
+
+plan(multisession)
 
 pull("llama3.2")
 
@@ -34,7 +38,13 @@ purposes_to_use <- c(
 )
 
 functions_to_use <- c(
-  "df <- read.table(file_name = data.csv, headers = T, sep = ',')"
+  "load_csv <- function(file_name = 'data.csv'){
+
+      final <- reader::read_csv(file = file_name)
+
+      return(final)
+    }
+  "
 )
 
 ## longer and shorter
@@ -54,19 +64,17 @@ df_prompts_response <- map_df(seq_len(nrow(combos_to_use[1:5,])), function(idx){
   this_chat <- chat_ollama(
     model = "llama3.2"
     ,system_prompt = glue::glue("
-    You are an expert prompt engineer that needs to fine-tune your large language model with novel datasets.
-    Your prompts are only used to generate code in the R Programming language.
-    The example code provided is the only target response.
-    Do not make assumptions.
+    You are {this_persona} as if you are a {this_role} while {this_purpose}.
+    You are an expert prompt engineer that needs to fine-tune.
+    Example code provided is the only target response.
+    Just give me the prompt you would use for the target response
     Focus on the problem the R programming task that the example code is trying to perform.
-    Adapt the prompt in the persona of {this_persona} as if they
-    are a {this_role} while {this_purpose}.
     ")
   )
 
   prompt_to_send <- glue::glue("
     Engineer a prompt that produces code very similar to the example code:
-      '{function_to_use}'
+      '{this_function}'
     Function arguments are examples only and can be replaced with different file paths and names.
   ")
 
@@ -74,14 +82,15 @@ df_prompts_response <- map_df(seq_len(nrow(combos_to_use[1:5,])), function(idx){
 
   final <- data.frame(
     prompt = response_to_write
-    ,response = function_to_use
+    ,response = this_function
   )
 
 })
 
 chat_test <- chat_ollama(model = "llama3.2",system_prompt = "
-You are an expert R programmer who prefers the tidyverse.
-Just give me the code. I don't want any explanation or sample data.
+You are an expert R programmer who prefers the tidyverse and functional programming.
+Provide only the best code block at the beginning. Just give me one code block.
+Provide explanation after the code.
 Follow the tidyverse style guide:
   * Spread long function calls across multiple lines.
   * Where needed, always indent function calls with two spaces.
@@ -93,7 +102,9 @@ Debug the code.
 Optimize the code for performance.
 ")
 
-idx <- 4
+idx <- 1
 df_prompts_response$prompt[idx]
 
 test_response <- chat_test$chat(df_prompts_response$prompt[idx])
+
+write_chat_to_code("load_data.R", "./R", test_response)
