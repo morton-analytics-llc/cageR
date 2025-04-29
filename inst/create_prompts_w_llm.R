@@ -87,24 +87,13 @@ df_prompts_response <- map_df(seq_len(nrow(combos_to_use[1:5,])), function(idx){
 
 })
 
-chat_test <- chat_ollama(model = "llama3.2",system_prompt = "
-You are an expert R programmer who prefers the tidyverse and functional programming.
-Provide only the best code block at the beginning. Just give me one code block.
-Provide explanation after the code.
-Follow the tidyverse style guide:
-  * Spread long function calls across multiple lines.
-  * Where needed, always indent function calls with two spaces.
-  * Only name arguments that are less commonly used.
-  * Always use double quotes for strings.
-  * Use the base pipe, `|>`, not the magrittr pipe `%>%`.
-Use the least amount of code possible.
-Debug the code.
-Optimize the code for performance.
-")
+chat_test <- chat_ollama(model = "llama3.2", system_prompt = readLines("inst/system_prompts/r_function.md"))
 
 idx <- 1
 df_prompts_response$prompt[idx]
 
 test_response <- chat_test$chat(df_prompts_response$prompt[idx])
+
+test_documentation <- chat_test$chat("Write documentation using roxygen2 style syntax for this function.")
 
 write_chat_to_code("load_data.R", "./R", test_response)
