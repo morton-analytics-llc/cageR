@@ -87,7 +87,7 @@ df_prompts_response <- map_df(seq_len(nrow(combos_to_use[1:5,])), function(idx){
 
 })
 
-chat_test <- chat_ollama(model = "llama3.2", system_prompt = readLines("inst/system_prompts/r_function.md"))
+chat_test <- chat_ollama(model = "llama3.2", system_prompt = readLines("inst/system_prompts/r_bindings.md"))
 
 idx <- 1
 df_prompts_response$prompt[idx]
