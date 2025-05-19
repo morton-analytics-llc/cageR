@@ -87,13 +87,14 @@ df_prompts_response <- map_df(seq_len(nrow(combos_to_use[1:5,])), function(idx){
 
 })
 
-chat_test <- chat_ollama(model = "llama3.2", system_prompt = readLines("inst/system_prompts/r_bindings.md"))
-
 idx <- 1
 df_prompts_response$prompt[idx]
 
+chat_generate_code <- chat_ollama(model = "llama3.2", system_prompt = readLines("inst/system_prompts/r_bindings.md"))
+
 test_response <- chat_test$chat(df_prompts_response$prompt[idx])
 
-test_documentation <- chat_test$chat("Write documentation using roxygen2 style syntax for this function.")
-
 write_chat_to_code("load_data.R", "./R", test_response)
+
+
+

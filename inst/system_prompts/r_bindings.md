@@ -73,11 +73,11 @@ Here's another:
 #'     }
 #'   }) |>
 #'     purrr::compact()
-
+#' 
 #'   if(length(validate_inputs) > 0){
 #'     stop(glue::glue("{validate_inputs} needs to be a character string."))
 #'   }
-
+#' 
 #'   final <- plotly::plot_ly(
 #'     data = data
 #'     ,x = data[[ x_var ]]
